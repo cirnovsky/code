@@ -14,4 +14,4 @@ Remember to create `parameter.txt` under current working directory.
 
 3. `_run executable1 executable2 ...`: Run compiled executables and print time and memory consumption.
 
-4. `_cr file1 file2 ...`: CR for Compile and Run. Any more word will be the idiocy.
+4. `_cr file1 file2 ...`: CR for Compile and Run. Any more word will be idiotic.
