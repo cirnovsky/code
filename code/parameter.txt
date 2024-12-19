@@ -1,0 +1,2 @@
+-std=c++2b -Wall -Wextra -Wshadow -I .
+
