@@ -4,4 +4,4 @@ Are these reusable pieces of code more called snippets in English? Screw it, we 
 
 ## Usage
 
-I love Vim, so `<ESC>:e t/<name>` will be sufficient. Quick and neat, isn't it?
+I love Vim, so `<ESC>:e t/<name>` will be sufficient. Quick and neat, innit?
