@@ -1,49 +1,40 @@
 #include <stdio.h>
-#include <sys/time.h>
 
-unsigned int Z;
-
-int rand_() {
-	return (Z *= 3) >> 1;
-}
-
-void srand_() {
-	struct timeval tv;
-
-	gettimeofday(&tv, NULL);
-	Z = tv.tv_sec ^ tv.tv_usec | 1;
-}
-
-struct Node {
-	int key, priority, size;
-	struct Node *l, *r;
-};
-
-Node *null;
-
-Node *node(int key) {
-	Node *x = (Node *) malloc(sizeof(node));
-
-	x->size = 1, x->key = key, x->priority = rand();
-	x->l = x->r = null;
-	return x;
-}
-
-void pul(Node *i) {
-	if (i != null)
-		i->size = i->l->size + i->r->size + 1;
-}
-
-void split(Node *i, int key, Node **let, Node **gt) {
-	if (i == null)
-		*let = *gt = null;
-	else if (i->key <= key) {
-		*let = i;
-		split(i->r, key, *let->r, *gt->)
-	}
-}
+#define N	50
 
 int main() {
-	srand_();
+	freopen("in", "r", stdin);
+	int t;
+
+	scanf("%d", &t);
+	while (t--) {
+		int n;
+		int i, j, k;
+		int one = 1, zero = 1;
+		static int aa[N];
+
+		scanf("%d", &n);
+		for (i = 0; i < n; ++i)
+			scanf("%d", aa + i);
+		for (i = 0; i < n; ++i)
+			if (aa[i])
+				zero = 0;
+		for (i = 0; i < n; ++i)
+			if (aa[i])
+				break;
+		for (j = n; j--;)
+			if (aa[j])
+				break;
+
+		for (k = i; k <= j; ++k)
+			if (!aa[k])
+				one = 0;
+		if (zero)
+			puts("0");
+		else if (one)
+			puts("1");
+		else
+			puts("2");
+	}
 	return 0;
 }
