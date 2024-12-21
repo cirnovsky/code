@@ -1,5 +1,7 @@
 # Scripts
 
+Shell scripts for compiling single-file C/C++.
+
 ## Usage
 
 Copy shell scripts under this directory to `~/bin` to start. Better to be used with my vim configuration.
