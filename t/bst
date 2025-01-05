@@ -1,14 +1,15 @@
-int ll[N + 1], rr[N + 1], zz[N + 1], xx[N + 1], ss[N + 1], _;
+
+int ll[N + 1], rr[N + 1], zz[N + 1], xx[N + 1], size[N + 1], _;
 
 int node(int x) {
 	zz[_] = rand_(), ll[_] = rr[_] = 0;
-	xx[_] = x, ss[_] = 1;
+	xx[_] = x, size[_] = 1;
 	return _++;
 }
 
 int pul(int i) {
 	if (i)
-		ss[i] = ss[ll[i]] + ss[rr[i]] + 1;
+		size[i] = size[ll[i]] + size[rr[i]] + 1;
 }
 
 void split(int i, int x, int *p, int *q) {
@@ -51,7 +52,7 @@ int rank(int x) {
 	int i, j, result;
 	
 	split(rt, x - 1, &i, &j);
-	result = ss[i] + 1;
+	result = size[i] + 1;
 	rt = merge(i, j);
 	return result;
 }
@@ -60,9 +61,9 @@ int at(int k) {
 	int i = rt;
 	
 	while (1) {
-		if (ss[ll[i]] + 1 < k)
-			k -= ss[ll[i]] + 1, i = rr[i];
-		else if (ss[ll[i]] + 1 == k)
+		if (size[ll[i]] + 1 < k)
+			k -= size[ll[i]] + 1, i = rr[i];
+		else if (size[ll[i]] + 1 == k)
 			return xx[i];
 		else
 			i = ll[i];

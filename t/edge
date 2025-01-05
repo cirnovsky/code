@@ -1,3 +1,4 @@
+
 int *ej[N], eo[N];
 
 void append(int i, int j) {

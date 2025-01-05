@@ -1,18 +1,16 @@
 #include <stdio.h>
 
-#define N	500
-
 int main() {
-	freopen("in", "r", stdin);
 	int t;
 
 	scanf("%d", &t);
 	while (t--) {
-		int n;
-		int i, j;
-		int yes = 1;
-		static char cc[N + 1];
+		int n, k;
+		int i;
+		static int aa[N];
 
-		scanf("%d%s", &n, cc);
+		scanf("%d %d", &n, &k);
+		for (i = 0; i < n; ++i)
+			scanf("%d", aa + i);
 	}
 }
