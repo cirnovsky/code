@@ -7,10 +7,10 @@ if [ "$#" -lt 1 ]; then
 fi
 
 # Read compilation parameters from parameter.txt
-if [ -f parameter.txt ]; then
-    compilation_params=$(<parameter.txt)
+if [ -f param ]; then
+    compilation_params=$(<param)
 else
-    echo "parameter.txt not found. Exiting."
+    echo "./param not found. Exiting."
     exit 1
 fi
 
@@ -18,8 +18,16 @@ fi
 for file in "$@"; do
     # Check if the file exists and is a regular file
     if [ -f "$file" ]; then
-        # Compile the file using g++
-        g++-14 $compilation_params "$file" -o "${file%.*}"  # Remove extension for output filename
+        # Compile the file using g++/gcc
+
+	if [[ $file == *.c ]]; then
+		cc="gcc"
+	else
+		cc="g++-14"
+	fi
+	cmd="$cc ${file} -o ${file%.*} ${compilation_params}"
+	echo -e "\e[1;32;41mCommand\e[0m \e[3;35m$cmd\e[0m"
+	eval $cmd
 
         # Check if compilation was successful
         if [ $? -eq 0 ]; then
