@@ -4,8 +4,9 @@
 #include <string>
 #include <random>
 #include <chrono>
+#include <cstring>
 
-/// {{{
+/// {{{ definations
 using ll = long long;
 using ull = unsigned long long;
 using db = double;
@@ -63,20 +64,76 @@ template <typename Tp>
 Tp& cmin(Tp& x, const Tp& y) {
 	return x = std::min(x, y);
 } // }}}
+
+const int N = 1e3;
+
+vvi adj;
+int kk[N * 2];
+
+int dfs(int i) {
+	kk[i] = 2;
+
+	int res = 0;
+	for (int j : adj[i])
+		if (kk[j] == 0)
+			res |= dfs(j);
+		else if (kk[j] == 2)
+			res = 1;
+		
+	kk[i] = 1;
+	return res;
+}
+
 int main() {
 	std::cin.tie(nullptr)->sync_with_stdio(0);
-	int t;
-	for (rd(t); t--;) {
-		int l, r; rd(l, r);
-		int ans[3] = {0, 0, 0};
-		bool ff[3] = {false, false, false};
-		for (k = 30; k >= 0; k--) {
-			if ((l >> k & 1) && (r >> k & 1)) {
-				for (int i : {0, 1, 2})
-					if (!ff[i])
-						ans[i] |= 1 << k;
-			}
-		}
+
+	int t; rd(t); while (t--) {
+		int n, m;
+		rd(n, m);
+
+		vvi aa(n, vi(m)), bb(n, vi(m));
+		int h = 0, ans = 1;
+		rep(n)
+			rds(aa[_]), cmax(h, *std::max_element(allu(aa[_])));
+		rep(n)
+			rds(bb[_]), cmax(h, *std::max_element(allu(bb[_])));
+
+		auto solve = [&](int bit) -> int {
+			vvi(n + m).swap(adj);
+			memset(kk, 0, (n + m) * sizeof *kk);
+			vi row(n), col(m);
+		
+
+			rep(i, n)
+				rep(j, m)
+					if ((aa[i][j] >> bit & 1) != (bb[i][j] >> bit & 1)) {
+						if (aa[i][j] >> bit & 1)
+							row[i] = 1;
+						else
+							col[j] = 1;
+					}
+
+			rep(i, n)
+				rep(j, m)
+					if ((bb[i][j] >> bit & 1) == 0)
+						adj[j + n].pb(i);
+					else
+						adj[i].pb(j + n);
+
+			rep(i, n)
+				if (row[i] && !kk[i] && dfs(i))
+					return false;
+			rep(j, m)
+				if (col[j] && !kk[j + n] && dfs(j + n))
+					return false;
+			return true;
+
+		};
+
+		for (int k = 0; (1 << k) <= h; ++k)
+			ans &= solve(k);
+		std::cout << (ans ? "YES" : "NO") << '\n';
 	}
+
 	return 0;
 }
