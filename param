@@ -1,1 +1,1 @@
--lJudy
+-Wall -Wextra -Wshadow -std=c++17

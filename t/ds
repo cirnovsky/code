@@ -5,7 +5,7 @@
 #include <random>
 #include <chrono>
 
-/// {{{ definations
+/// {{{ definitions
 using ll = long long;
 using ull = unsigned long long;
 using db = double;
@@ -63,6 +63,8 @@ template <typename Tp>
 Tp& cmin(Tp& x, const Tp& y) {
 	return x = std::min(x, y);
 } // }}}
+
+using namespace std;
 
 int main() {
 	std::cin.tie(nullptr)->sync_with_stdio(0);

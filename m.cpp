@@ -1,12 +1,15 @@
+/**
+ * x = d(lca, u), y = d(lca, v), 2 * y - 1
+ * min(d(lca, u), d(lca, v)) * 2 - 1 = (min(d(u), d(v)) - d(lca)) * 2 - 1 */
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <string>
 #include <random>
 #include <chrono>
-#include <cstring>
 
-/// {{{ definations
+/// {{{ definitions
 using ll = long long;
 using ull = unsigned long long;
 using db = double;
@@ -65,75 +68,42 @@ Tp& cmin(Tp& x, const Tp& y) {
 	return x = std::min(x, y);
 } // }}}
 
-const int N = 1e3;
+using namespace std;
 
-vvi adj;
-int kk[N * 2];
+int n, d, mod;
 
-int dfs(int i) {
-	kk[i] = 2;
+int exgcd(int a, int b, int &x, int &y) {
+	if (!b) {
+		x = 1, y = 0;
+		return a;
+	}
+	int g = exgcd(b, a % b, y, x);
+	y -= a / b * x;
+	return g;
+}
 
-	int res = 0;
-	for (int j : adj[i])
-		if (kk[j] == 0)
-			res |= dfs(j);
-		else if (kk[j] == 2)
-			res = 1;
-		
-	kk[i] = 1;
-	return res;
+int inverse(int a) {
+	int x, y;
+	exgcd(a, mod, x, y);
+	return (x % mod + mod) % mod;
+}
+
+// = n!/(k!(n-k)!) = n*(n-1)*...*(k+1)/(n-k)!
+long long choose(int n, int k) {
+	long long up = 1, dn = 1;
+	rep(i, k)
+		up *= n - i, dn *= i + 1;
+	return up / dn;
+}
+
+vi
+
+void dfs(int i) {
+	
 }
 
 int main() {
 	std::cin.tie(nullptr)->sync_with_stdio(0);
-
-	int t; rd(t); while (t--) {
-		int n, m;
-		rd(n, m);
-
-		vvi aa(n, vi(m)), bb(n, vi(m));
-		int h = 0, ans = 1;
-		rep(n)
-			rds(aa[_]), cmax(h, *std::max_element(allu(aa[_])));
-		rep(n)
-			rds(bb[_]), cmax(h, *std::max_element(allu(bb[_])));
-
-		auto solve = [&](int bit) -> int {
-			vvi(n + m).swap(adj);
-			memset(kk, 0, (n + m) * sizeof *kk);
-			vi row(n), col(m);
-		
-
-			rep(i, n)
-				rep(j, m)
-					if ((aa[i][j] >> bit & 1) != (bb[i][j] >> bit & 1)) {
-						if (aa[i][j] >> bit & 1)
-							row[i] = 1;
-						else
-							col[j] = 1;
-					}
-
-			rep(i, n)
-				rep(j, m)
-					if ((bb[i][j] >> bit & 1) == 0)
-						adj[j + n].pb(i);
-					else
-						adj[i].pb(j + n);
-
-			rep(i, n)
-				if (row[i] && !kk[i] && dfs(i))
-					return false;
-			rep(j, m)
-				if (col[j] && !kk[j + n] && dfs(j + n))
-					return false;
-			return true;
-
-		};
-
-		for (int k = 0; (1 << k) <= h; ++k)
-			ans &= solve(k);
-		std::cout << (ans ? "YES" : "NO") << '\n';
-	}
 
 	return 0;
 }
