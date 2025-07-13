@@ -2,6 +2,6 @@
 
 for file in *.sh; do
 	if [ $file != "ln.sh" ]; then
-		ln -s $(realpath $file) /home/"$1"/bin/_${file%.*}
+		ln -s $(realpath $file) $HOME/.local/bin/c${file%.*}
 	fi
 done
