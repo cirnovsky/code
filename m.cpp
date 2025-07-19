@@ -1,7 +1,3 @@
-/**
- * x = d(lca, u), y = d(lca, v), 2 * y - 1
- * min(d(lca, u), d(lca, v)) * 2 - 1 = (min(d(u), d(v)) - d(lca)) * 2 - 1 */
-
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -70,40 +66,41 @@ Tp& cmin(Tp& x, const Tp& y) {
 
 using namespace std;
 
-int n, d, mod;
+#include "atcoder/modint"
 
-int exgcd(int a, int b, int &x, int &y) {
-	if (!b) {
-		x = 1, y = 0;
-		return a;
+using mint = atcoder::modint998244353;
+
+const ll INF = 1ll << 40;
+void solve() {
+	int n, K = 0;
+	cin >> n;
+	vi a(n), b(n);
+	for (int i = 0; i < n - 1; ++i) {
+		cin >> a[i];
+		K = max(K, __lg(a[i]) + 2);
 	}
-	int g = exgcd(b, a % b, y, x);
-	y -= a / b * x;
-	return g;
+	for (int i = 0; i < n; ++i) {
+		cin >> b[i];
+		K = max(K, __lg(b[i]) + 2);
+	}
+	vvll dp(n, vll(K + 1, INF));
+	for (int k = 0; k < K; ++k) {
+		if (((1ll << k) > (a[n - 1] & a[1] | a[0]) ^ a[0]) && !((1ll << k) & (a[0] | a[n - 1])))
+			dp[0][k] = (1ll << k) - (a[n - 1] & a[1] | a[0] ^ a[0]);
+	}
+	for (int i = 1; i < n; ++i) {
+		for (int j = 0; j < K; ++j)
+			if (((1ll << j) > (a[i - 1] & a[i + 1] | a[i] ^ a[i])) && !((1ll << j) & (a[i] | a[i - 1]))) {
+				for (int k = 0; k < K; ++k)
+					if (j != k)
+						cmin(dp[i][j], dp[i - 1][k] + (1ll << j) - (a[i - 1] & a[i + 1] | a[i] ^ a[i]));
+			}
+	}
+	cout << *min_element(allu(dp[n - 1])) << "\n";
 }
-
-int inverse(int a) {
-	int x, y;
-	exgcd(a, mod, x, y);
-	return (x % mod + mod) % mod;
-}
-
-// = n!/(k!(n-k)!) = n*(n-1)*...*(k+1)/(n-k)!
-long long choose(int n, int k) {
-	long long up = 1, dn = 1;
-	rep(i, k)
-		up *= n - i, dn *= i + 1;
-	return up / dn;
-}
-
-vi
-
-void dfs(int i) {
-	
-}
-
 int main() {
 	std::cin.tie(nullptr)->sync_with_stdio(0);
-
-	return 0;
+	int t;
+	std::cin >> t;
+	while (t--) solve();
 }
