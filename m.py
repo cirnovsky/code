@@ -1,24 +1,11 @@
-import random
+import sympy as sp
 
-def query(prdb):
-    print(len(prdb))
-    for p, r, d, b in prdb:
-        print(p, r, d, b)
-    W, H = map(int, input().split())
-    return W, H
+s5 = sp.sqrt(5)
+T = sp.Matrix([[0, 1], [1, 1]])
 
-N, T, sigma = map(int, input().split())
-wh = [tuple(map(int, input().split())) for _ in range(N)]
+vecs = T.eigenvects()
 
-rng = random.Random(1234)
-
-for _ in range(T):
-    prdb = []
-    for i in range(N):
-        prdb.append((
-            i,
-            rng.randint(0, 1),
-            ['U', 'L'][rng.randint(0, 1)],
-            rng.randint(-1, i - 1),
-        ))
-    query(prdb)
+for val, mult, vec in vecs:
+    v = vec[0]
+    v_sc = 2 * v / v[0]
+    print(sp.latex(v_sc))
