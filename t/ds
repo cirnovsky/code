@@ -51,9 +51,21 @@ void rds(Tp* v, int n) {
 		rd(v[i]);
 }
 template <typename Tp>
-void rds(std::vector<Tp>& v) {
+void rds(std::vector<Tp> &v) {
 	for (Tp& x : v)
 		rd(x);
+}
+template <typename Tp>
+void prts(std::vector<Tp> &v, char sep=' ', char end='\n') {
+	const int n = v.size();
+
+	if (n == 0) {
+		std::cout << end;
+		return;
+	}
+	for (int i = 0; i < n - 1; ++i)
+		std::cout << v[i] << sep;
+	std::cout << v[n - 1] << end;
 }
 template <typename Tp>
 Tp& cmax(Tp& x, const Tp& y) {
