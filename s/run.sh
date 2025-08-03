@@ -6,7 +6,7 @@ if [ "$#" -lt 1 ]; then
     exit 1
 fi
 
-executable="$1"
+executable="${1%.*}"
 
 # Check if the executable exists and is executable
 if [ ! -x "$executable" ]; then

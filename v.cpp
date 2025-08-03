@@ -1,4 +1,4 @@
-#include <cassert>
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -79,59 +79,19 @@ Tp& cmin(Tp& x, const Tp& y) {
 
 using namespace std;
 
-const int N = 1e4, V = 5e2;
-int p[N], a[N], b[N], dp[N][V + 1], pre[N + 1];
+using ll = long long;
+const int N = 200100;
+ll dp[5 * N];
 
 int main() {
 	std::cin.tie(nullptr)->sync_with_stdio(0);
 	int n;
 	cin >> n;
-	rep(i, n) cin >> p[i] >> a[i] >> b[i];
-	rep(i, n)
-		pre[i + 1] = pre[i] + b[i];
-	for (int j = 0; j <= V; ++j) {
-		if (p[n - 1] >= j)
-			dp[n - 1][j] = j + a[n - 1];
-		else
-			dp[n - 1][j] = j - b[n - 1];
-	}
-	auto find = [&](int mood, int from) {
-		int l = from, r = n - 1, res = n - 1;
-		while (l <= r) {
-			int m = (l + r) / 2;
-			int sum = pre[m + 1] - pre[from];
-			if (mood - sum <= V) {
-				l = m + 1;
-				res = m;
-			} else {
-				r = m - 1;
-			}
-		}
-		return res;
-	};
-	drep(i, n - 1) {
-		for (int j = 0; j <= V; ++j) {
-			if (p[i] >= j) {
-				if (j + a[i] <= V) dp[i][j] = dp[i + 1][j + a[i]];
-				else {
-					int k = find(j + a[i], i + 1);
-					if (k + 1 < n) {
-						int mood = j + a[i] - pre[k + 1] + pre[i + 1];
-						assert(0 <= mood && mood <= V);
-						dp[i][j] = dp[k + 1][mood];
-					} else{
-						dp[i][j] = max(0, j + a[i] - pre[n] + pre[i + 1]);
-					}
-				}
-			} else {
-				dp[i][j] = dp[i + 1][max(0, j - b[i])];
-			}
-		}
-	}
-	int q;
-	cin >> q;
-	for (int x; q--;) {
-		cin >> x;
-		cout << dp[0][x] << "\n";
-	}
+	dp[1] = 1;
+	const int MOD = 998244353;
+	for (int i = 2; i <= n; ++i) dp[i] = (dp[i - 1] + dp[i - 2])  %MOD;
+	ll u = (MOD +1) / 2;
+	for (int i = 1; i < n; ++i) u = u * ((MOD + 1) / 2) % MOD;
+	cout << dp[n] * u % MOD << "\n";
+	return 0;
 }
