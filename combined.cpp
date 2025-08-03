@@ -51,9 +51,21 @@ void rds(Tp* v, int n) {
 		rd(v[i]);
 }
 template <typename Tp>
-void rds(std::vector<Tp>& v) {
+void rds(std::vector<Tp> &v) {
 	for (Tp& x : v)
 		rd(x);
+}
+template <typename Tp>
+void prts(std::vector<Tp> &v, char sep=' ', char end='\n') {
+	const int n = v.size();
+
+	if (n == 0) {
+		std::cout << end;
+		return;
+	}
+	for (int i = 0; i < n - 1; ++i)
+		std::cout << v[i] << sep;
+	std::cout << v[n - 1] << end;
 }
 template <typename Tp>
 Tp& cmax(Tp& x, const Tp& y) {
@@ -598,17 +610,31 @@ using is_dynamic_modint_t = std::enable_if_t<is_dynamic_modint<T>::value>;
 
 using mint = atcoder::modint998244353;
 
+// dp[i][j] += dp[k][t], k - i == j + t - 1
+// k - t == j + i - 1
+// i = 1: [1+1, 1+2, ..., 1+n] 2~n+1
+// i = 2: [2+1, 2+2, ..., 2+n] 3~n+2
+//
+// i = 1: [1-1, 1-2, ..., 1-n] 0~1-n
+//                             1~2-n
+// ans = dp[n + 1][1]
+
+const int N = 200100;
+mint dp[N];
+
 int main() {
 	std::cin.tie(nullptr)->sync_with_stdio(0);
-
-	long long n;
-	rd(n);
-	mint ans = mint(n) * (n + 1) / 2;
-	for (long long l = 1, r = 0; l <= n; l = r + 1)
-	{
-		r = n / (n / l);
-		ans -= (r - l + 1) * (n / l);
-	}
-	std::cout << ans.val() << "\n";
+	int n;
+	cin >> n;
+	dp[0][1] = 1;
+	for (int i = 1; i <= n + 1; ++i)
+ 		for (int j = 1; j <= n; ++j)
+			for (int k = 0; k < i; ++k)
+				for (int t = 1; t <= n; ++t)
+					if (k - i == j + t - 1) dp[i][j] += dp[k][t];
+	mint power = 1;
+	for (int i = 0; i < n; ++i) power *= 2;
+	mint ans = dp[n + 1][1] / power;
+	cout << ans.val() << "\n";
 	return 0;
 }
