@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -78,49 +79,12 @@ Tp& cmin(Tp& x, const Tp& y) {
 
 using namespace std;
 
-#include "atcoder/modint"
-
-using mint = atcoder::modint1000000007;
-
-int solve()
-{
-	int n;
-	cin >> n;
-	vi a(n);
-	rds(a);
-	int ans = 0;
-	int mn = *min_element(allu(a));
-	for (int r : {0, 1, 2})
-	{
-		mint rhs = 0, power = 1;
-		drep(i, n)
-		{
-			rhs += power * (a[i] - r);
-			power *= -2;
-		}
-		vector<mint> k(n);
-		k[0] = rhs / (mint(-2).pow(n - 1) * 2 + 1);
-		rep(i, 1, n)
-		{
-			k[i] = a[i - 1] - r - 2 * k[i - 1];
-		}
-		rep(i, n)
-		{
-			ll t = 1ll * a[i] - 2 * k[i].val() - k[(i + 1) % n].val();
-			if (t != r)
-			{
-				goto fail;
-			}
-		}
-		cmax(ans, (mn - r) / 3 * 3 + r);
-		fail:;
-	}
-	return ans;
-}
-
 int main() {
-	std::cin.tie(nullptr)->sync_with_stdio(0);
-	int t;
-	cin >> t;
-	while (t--) cout << solve() << "\n";
+  puts("1");
+  int n = 1000;
+  cout << n << "\n";
+  rep(n)
+  {
+    cout << rng(1e9 - 233, 1e9 + 1) << " ";
+  }
 }

@@ -608,33 +608,47 @@ using is_dynamic_modint_t = std::enable_if_t<is_dynamic_modint<T>::value>;
 }  // namespace atcoder
 
 
-using mint = atcoder::modint998244353;
+using mint = atcoder::modint1000000007;
 
-// dp[i][j] += dp[k][t], k - i == j + t - 1
-// k - t == j + i - 1
-// i = 1: [1+1, 1+2, ..., 1+n] 2~n+1
-// i = 2: [2+1, 2+2, ..., 2+n] 3~n+2
-//
-// i = 1: [1-1, 1-2, ..., 1-n] 0~1-n
-//                             1~2-n
-// ans = dp[n + 1][1]
-
-const int N = 200100;
-mint dp[N];
+int solve()
+{
+	int n;
+	cin >> n;
+	vi a(n);
+	rds(a);
+	int ans = 0;
+	int mn = *min_element(allu(a));
+	for (int r : {0, 1, 2})
+	{
+		mint rhs = 0, power = 1;
+		drep(i, n)
+		{
+			rhs += power * (a[i] - r);
+			power *= -2;
+		}
+		vector<mint> k(n);
+		k[0] = rhs / (mint(-2).pow(n - 1) * 2 + 1);
+		rep(i, 1, n)
+		{
+			k[i] = a[i - 1] - r - 2 * k[i - 1];
+		}
+		rep(i, n)
+		{
+			ll t = 1ll * a[i] - 2 * k[i].val() - k[(i + 1) % n].val();
+			if (t != r)
+			{
+				goto fail;
+			}
+		}
+		cmax(ans, (mn - r) / 3 * 3 + r);
+		fail:;
+	}
+	return ans;
+}
 
 int main() {
 	std::cin.tie(nullptr)->sync_with_stdio(0);
-	int n;
-	cin >> n;
-	dp[0][1] = 1;
-	for (int i = 1; i <= n + 1; ++i)
- 		for (int j = 1; j <= n; ++j)
-			for (int k = 0; k < i; ++k)
-				for (int t = 1; t <= n; ++t)
-					if (k - i == j + t - 1) dp[i][j] += dp[k][t];
-	mint power = 1;
-	for (int i = 0; i < n; ++i) power *= 2;
-	mint ans = dp[n + 1][1] / power;
-	cout << ans.val() << "\n";
-	return 0;
+	int t;
+	cin >> t;
+	while (t--) cout << solve() << "\n";
 }
