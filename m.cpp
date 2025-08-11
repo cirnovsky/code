@@ -1,126 +1,59 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <string>
-#include <random>
-#include <chrono>
+// X1(a) X2(b)
+// Y1(c) Y2(d)
+// X1*Y1 -> X2*Y2
+// X1*Y2 -> X2*Y1
 
-/// {{{ definitions
-using ll = long long;
-using ull = unsigned long long;
-using db = double;
-using ldb = long double;
-
-#define pb push_back
-#define eb emplace_back
-#define mkp std::make_pair
-#define allu(u) (u).begin(), (u).end()
-std::mt19937 rnd(std::chrono::steady_clock::now().time_since_epoch().count());
-#define rng(l, r) std::uniform_int_distribution<ll>(l, r - 1)(rnd)
-
-#define rep1(n) for (int _ = 0; _ < n; ++_)
-#define rep2(i, n) for (int i = 0; i < (n); ++i)
-#define rep3(i, l, h) for (auto i = (l); i < (h); ++i)
-#define rep4(i, l, h, d) for (auto i = (l); i < (h); i += (d))
-#define drep1(n) for (int _ = (n) - 1; _ >= 0; --_)
-#define drep2(i, n) for (int i = (n) - 1; i >= 0; --i)
-#define drep3(i, h, l) for (auto i = (h) - 1; i >= l; --i)
-#define drep4(i, h, l, d) for (auto i = (h) - 1; i >= l; i -= (d))
-#define __overload(a, b, c, d, e, ...) e
-#define rep(...) __overload(__VA_ARGS__, rep4, rep3, rep2, rep1)(__VA_ARGS__)
-#define drep(...) __overload(__VA_ARGS__, drep4, drep3, drep2, drep1)(__VA_ARGS__)
-
-using vi = std::vector<int>;
-using vvi = std::vector<vi>;
-using vll = std::vector<ll>;
-using vvll = std::vector<vll>;
-using bsi = std::basic_string<int>;
-template <typename Tp>
-using vt = std::vector<Tp>;
-template <typename Tp>
-using bst = std::basic_string<Tp>;
-
-template <typename Tp> void rd(Tp& x) { std::cin >> x; }
-template <typename Tp, typename... Args>
-void rd(Tp& x, Args&... args) {
-	rd(x), rd(args...);
-}
-template <typename Tp>
-void rds(Tp* v, int n) {
-	for (int i = 0; i < n; ++i)
-		rd(v[i]);
-}
-template <typename Tp>
-void rds(std::vector<Tp> &v) {
-	for (Tp& x : v)
-		rd(x);
-}
-template <typename Tp>
-void prts(std::vector<Tp> &v, char sep=' ', char end='\n') {
-	const int n = v.size();
-
-	if (n == 0) {
-		std::cout << end;
-		return;
-	}
-	for (int i = 0; i < n - 1; ++i)
-		std::cout << v[i] << sep;
-	std::cout << v[n - 1] << end;
-}
-template <typename Tp>
-Tp& cmax(Tp& x, const Tp& y) {
-	return x = std::max(x, y);
-}
-template <typename Tp>
-Tp& cmin(Tp& x, const Tp& y) {
-	return x = std::min(x, y);
-} // }}}
+#include <bits/stdc++.h>
 
 using namespace std;
 
-#include "atcoder/modint"
+const int N = 2e5;
+int xx[N], yy[N], tmp[N], tmp2[N], rev[N], rev2[N];
 
-using mint = atcoder::modint1000000007;
-
-int solve()
+void solve()
 {
 	int n;
-	cin >> n;
-	vi a(n);
-	rds(a);
-	int ans = 0;
-	int mn = *min_element(allu(a));
-	for (int r : {0, 1, 2})
+	scanf("%d", &n);
+	for (int i = 0; i < n; ++i)
 	{
-		mint rhs = 0, power = 1;
-		drep(i, n)
-		{
-			rhs += power * (a[i] - r);
-			power *= -2;
-		}
-		vector<mint> k(n);
-		k[0] = rhs / (mint(-2).pow(n - 1) * 2 + 1);
-		rep(i, 1, n)
-		{
-			k[i] = a[i - 1] - r - 2 * k[i - 1];
-		}
-		rep(i, n)
-		{
-			ll t = 1ll * a[i] - 2 * k[i].val() - k[(i + 1) % n].val();
-			if (t != r)
-			{
-				goto fail;
-			}
-		}
-		cmax(ans, (mn - r) / 3 * 3 + r);
-		fail:;
+		scanf("%d%d", &xx[i], &yy[i]);
 	}
-	return ans;
+	iota(tmp, tmp + n, 0);
+	iota(tmp2, tmp2 + n, 0);
+	sort(tmp, tmp + n, [&](int i, int j)
+			{
+			return xx[i] < xx[j];
+			});
+	sort(tmp2, tmp2 + n, [&](int i, int j)
+			{
+			return yy[i] < yy[j];
+			});
+	for (int i = 0; i < n; ++i)
+	{
+		rev[tmp[i]] = i;
+		rev2[tmp2[i]] = i;
+	}
+	vector<int> cat[4];
+	for (int i = 0; i < n; ++i)
+	{
+		cat[(rev[i] < n / 2) << 1 | (rev2[i] < n / 2)].push_back(i);
+	}
+	for (int i = 0; i < (int) cat[2].size(); ++i)
+	{
+		printf("%d %d\n", cat[2][i] + 1, cat[1][i] + 1);
+	}
+	for (int i = 0; i < (int) cat[3].size(); ++i)
+	{
+		printf("%d %d\n", cat[3][i] + 1, cat[0][i] + 1);
+	}
 }
 
-int main() {
-	std::cin.tie(nullptr)->sync_with_stdio(0);
+int main()
+{
 	int t;
-	cin >> t;
-	while (t--) cout << solve() << "\n";
+	scanf("%d", &t);
+	while (t--)
+	{
+		solve();
+	}
 }
