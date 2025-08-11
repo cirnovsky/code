@@ -5,7 +5,7 @@ if [ -f "$1" ]; then
     # Run _cp and only run _run if _cp succeeds
     _cp "$1"
     if [ "$?" -eq 0 ]; then
-        _run "${1%.*}"
+        _run $@
     else
         echo "Compilation failed. Skipping run."
     fi
