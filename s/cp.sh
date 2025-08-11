@@ -34,8 +34,10 @@ for file in "$@"; do
             echo "Compiled $file successfully."
         else
             echo "Failed to compile $file."
+	    exit 1
         fi
     else
         echo "$file is not a valid file."
+	exit 1
     fi
 done
