@@ -1,87 +1,63 @@
+// time-limit: 3000
+// problem-url: https://codeforces.com/contest/2110/problem/D
 #include <bits/stdc++.h>
 using namespace std;
 
-using IT = vector<int>::iterator;
+using PI = pair<int, int>;
+
+int cumin(int i, int j) {
+	if (i == -1) return j;
+	else if (j == -1) return i;
+	return min(i, j);
+}
 
 const int N = 2e5;
-long long p[N], d[N];
-int adj[N * 2], tag[N * 2], dd[N * 2];
+vector<PI> adj[N];
+int dp[N], a[N];
 
-IT bisect(IT first, IT last, long long x) {
-	IT res = last;
-	while (first != last) {
-		IT mid = first + (last - first) / 2;
-		if (p[*mid] >= x) {
-			res = mid, last = mid;
+int search(int ok, int ng, int n) {
+	int res = -1;
+	while (ok != ng) {
+		int md = ok + (ng - ok) / 2;
+		memset(dp, -1, n * sizeof *dp);
+		dp[n - 1] = 0;
+		queue<int> qu({n - 1});
+		while (qu.size()) {
+			int j = qu.front();
+			qu.pop();
+			for (auto&& [i, w] : adj[j]) {
+				if (dp[j] + min(a[j], md - dp[j]) >= w) dp[i] = cumin(dp[i], dp[j] + min(a[j], md - dp[j]));
+			}
+		}
+		if (dp[0] != -1) {
+			ng = md, res = md;
 		} else {
-			first = mid + 1;
+			ok = md + 1;
 		}
 	}
 	return res;
 }
 
-void dfs(int u) {
-	tag[u] = 1;
-	if (adj[u] >= 0 && !tag[adj[u]]) dfs(adj[u]);
-}
-
-void solve() {
-	int n;
-	long long k;
-	scanf("%d%lld", &n, &k);
-	for (int i = 0; i < n; ++i) scanf("%lld", &p[i]);
-	for (int i = 0; i < n; ++i) scanf("%lld", &d[i]);
-	//suppose at x at time t, k|(|x-pi|+t-di), turn around
-	//+: k|(pi-x+t-di), group traffic lights by (pi-di)%k
-	//will collide with (x-t)%k group
-	//-: k|(x+t-pi-di), (pi+di)%k
-	//(x+t)%k group
-	vector<vector<int>> pos(k), neg(k);
-	for (int i = 0; i < n; ++i) {
-		pos[(p[i] + k - d[i] % k) % k].push_back(i);
-		neg[(p[i] + d[i]) % k].push_back(i);
+int solve() {
+	int n, m;
+	scanf("%d%d", &n, &m);
+	for (int i = 0; i < n; ++i) vector<PI>().swap(adj[i]);
+	for (int i = 0; i < n; ++i) scanf("%d", &a[i]);
+	int upp = 0;
+	for (int u, v, w; m--;) {
+		scanf("%d%d%d", &u, &v, &w);
+		u--;
+		v--;
+		adj[v].emplace_back(u, w);
+		upp = max(upp, w);
 	}
-	memset(dd, 0, 2 * n * sizeof *dd);
-	memset(adj, -1, 2 * n * sizeof *adj);
-	for (int i = 0; i < n; ++i) {
-		auto& vec = pos[(p[i] + k - d[i] % k) % k];
-		auto j = bisect(vec.begin(), vec.end(), p[i] + 1);
-		if (j != vec.end()) {
-			adj[i + n] = *j;
-			dd[*j]++;
-		}
-		vec = neg[(p[i] + d[i]) % k];
-		j = bisect(vec.begin(), vec.end(), p[i]);
-		if (j != vec.begin()) {
-			adj[i] = *(j - 1) + n;
-			dd[*(j - 1) + n - 1]++;
-		}
-	}
-	memset(tag, 0, 2 * n * sizeof *tag);
-	for (int i = 0; i < 2 * n; ++i) {
-		if (dd[i] == 0 && !tag[i]) dfs(i);
-	}
-	for (int i = 0; i < 2 * n; ++i) {
-		if (!tag[i]) tag[i] = 2;
-	}
-	int q;
-	scanf("%d", &q);
-	while (q--) {
-		long long x;
-		scanf("%lld", &x);
-		auto& vec = pos[x % k];
-		auto j = bisect(vec.begin(), vec.end(), x);
-		if (j != vec.end()) {
-			cout << (tag[*j] == 2 ? "NO\n" : "YES\n");
-		} else {
-			cout << "yes\n";
-		}
-	}
+	//BS on answer
+	return search(0, upp + 1, n);
 }
 
 int main() {
+	puts("FUCK");
 	int t;
 	scanf("%d", &t);
-	while (t--) solve();
+	while (t--) printf("%d\n", solve());
 }
-
