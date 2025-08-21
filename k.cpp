@@ -1,85 +1,84 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <map>
-#include <set>
-#include <functional>
-
+#include <bits/stdc++.h>
 using namespace std;
 
-const int MOD = 1'000'000'007;
-
-long long binpow(long long a, long long p) {
-	return p?binpow(a*a%MOD, p>>1)*(p&1?a:1)%MOD:1;
+void dfs(int u, vector<int>& tag, const vector<int>& adj) {
+	tag[u] = 1;
+	if (adj[u] >= 0 && !tag[u])
+		dfs(adj[u], tag, adj);
 }
 
-long long bininv(long long a) {
-	return binpow(a, MOD-2);
-}
-
-void solve(int test_ind){
+void solve() {
+	//suppose at x at time t, k|(|x-pi|+t-di), turn around
+	//+: k|(pi-x+t-di), group traffic lights by (pi-di)%k
+	//will collide with (x-t)%k group
+	//-: k|(x+t-pi-di), (pi+di)%k
+	//(x+t)%k group
+	//build a graph with nodes (i, +/-)
+	//every node with <= 1 out edge
 	int n;
-	cin >> n;
-	vector<long long> a(n);
-	for (auto &i: a) cin >> i;
-	long long ans = -1;
-	for (long long dd=0;dd<3;++dd) {
-		long long sm = 0;
-		for (auto i: a) sm += i;
-		if (sm % 3 != dd * n % 3) continue;
-		// cx + d
-		long long c = 1, d = 0;
-		for (int i=1;i<n;++i) {
-			// a[i] - (cx+d) * 2 - dd
-			// a[i] - dd -2cx - 2d
-			// -2cx, a[i] - dd - 2d
-			c = c * (MOD - 2ll) % MOD;
-			d = (a[i] + MOD - dd - 2ll * d % MOD + MOD) % MOD;
+	long long k;
+	cin >> n >> k;
+	vector<long long> p(n), d(n);
+	for (auto& x : p) cin >> x;
+	for (auto& x : d) cin >> x;
+	vector<vector<int>> pos(k), neg(k);
+	for (int i = 0; i < n; ++i) {
+		pos[(p[i] + k - d[i] % k) % k].push_back(i);
+		neg[(p[i] + d[i]) % k].push_back(i);
+	}
+	vector<int> dd(2 * n), adj(2 * n, -1);
+	auto find = [&](const vector<int>& vec, long long x) {
+		int l = 0, r = (int) vec.size() - 1, res = (int) vec.size();
+		while (l <= r) {
+			int m = (l + r) / 2;
+			if (p[vec[m]] >= x) {
+				r = m - 1, res = m;
+			} else {
+				l = m + 1;
+			}
 		}
-		// a[0] = dd+(2c+1)x+2d
-		for (long long delta=0;delta<1;++delta) {
-			long long x = ((a[0] + MOD - dd) % MOD - 2ll * d % MOD + MOD + MOD) % MOD * bininv((2ll * c + 1))%MOD;
-			x += delta * MOD;
-
-			// cerr << dd << " " << x << endl;
-			long long a0 = a[0] - x;
-			long long mn = x;
-			sm = x;
-			for (int i=1;i<n;++i) {
-				x = a[i] - dd - 2 * x;
-				// cerr << i << ": " << x << endl;
-				mn = min(mn, x);
-				sm += x;
-				if (abs(x) > 100ll * MOD) break;
-				if (i == n-1) {
-					a0 -= 2 * x;
-				}
-			}
-			if (a0 == dd && mn >= 0) {
-				long long val = sm - mn * n;
-				if (ans == -1 || ans > val) ans = val;
-			}
+		return res;
+	};
+	for (int i = 0; i < n; ++i) {
+		auto& vec = pos[(p[i] + k - d[i] % k) % k];
+		int j = find(vec, p[i] + 1);
+		if (j < (int) vec.size()) {
+			adj[i + n] = vec[j];
+			dd[vec[j]]++;
+		}
+		vec = neg[(p[i] + d[i]) % k];
+		j = find(vec, p[i]);
+		if (j > 0) {
+			adj[i] = vec[j] + n - 1;
+			dd[vec[j] + n - 1]++;
 		}
 	}
-	if (ans == -1) {
-	    cout << 0 << endl;
-	} else {
-        long long original_sum = 0;
-        for (auto& x : a) {
-            original_sum += x;
-        }
-        cout << (original_sum - 3 * ans) / n << endl;
+	vector<int> tag(2 * n);
+	for (int i = 0; i < 2 * n; ++i) {
+		if (dd[i] == 0 && !tag[i])
+			dfs(i, tag, adj);
+	}
+	for (int i = 0; i < 2 * n; ++i) {
+		if (!tag[i]) tag[i] = 2;
+	}
+	int q;
+	cin >> q;
+	while (q--) {
+		long long x;
+		cin >> x;
+		const auto& vec = pos[x % k];
+		int j = find(vec, x);
+		if (j < (int) vec.size()) {
+			cout << (tag[vec[j]] == 2 ? "NO\n" : "YES\n");
+		} else {
+			cout << "9YES\n";
+		}
 	}
 }
 
-int main(){
-	cin.tie(0);
-	ios_base::sync_with_stdio(false);
-	int t=1;
+int main() {
+	cin.tie(nullptr)->sync_with_stdio(0);
+	int t;
 	cin >> t;
-	for(int i=0;i<t;i++){
-		solve(i);
-	}
-	return 0;
+	while (t--) solve();
 }

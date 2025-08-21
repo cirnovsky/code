@@ -22,7 +22,11 @@ IT bisect(IT first, IT last, long long x) {
 
 void dfs(int u) {
 	tag[u] = 1;
-	if (adj[u] >= 0 && !tag[adj[u]]) dfs(adj[u]);
+	if (adj[u] >= 0) {
+		int v = adj[u];
+		if (!tag[v]) dfs(v);
+		else tag[u] = 2;
+	}
 }
 
 void solve() {
@@ -43,22 +47,26 @@ void solve() {
 	}
 	memset(dd, 0, 2 * n * sizeof *dd);
 	memset(adj, -1, 2 * n * sizeof *adj);
+	vector<int> out(2 * n, 0);
 	for (int i = 0; i < n; ++i) {
 		auto& vec = pos[(p[i] + k - d[i] % k) % k];
 		auto j = bisect(vec.begin(), vec.end(), p[i] + 1);
 		if (j != vec.end()) {
+			out[i + n]++;
 			adj[i + n] = *j;
 			dd[*j]++;
 		}
 		vec = neg[(p[i] + d[i]) % k];
 		j = bisect(vec.begin(), vec.end(), p[i]);
 		if (j != vec.begin()) {
+			out[i]++;
 			adj[i] = *(j - 1) + n;
-			dd[*(j - 1) + n - 1]++;
+			dd[*(j - 1) + n]++;
 		}
 	}
 	memset(tag, 0, 2 * n * sizeof *tag);
 	for (int i = 0; i < 2 * n; ++i) {
+		assert(out[i] <= 1);
 		if (dd[i] == 0 && !tag[i]) dfs(i);
 	}
 	for (int i = 0; i < 2 * n; ++i) {
@@ -74,7 +82,7 @@ void solve() {
 		if (j != vec.end()) {
 			cout << (tag[*j] == 2 ? "NO\n" : "YES\n");
 		} else {
-			cout << "yes\n";
+			cout << "YES\n";
 		}
 	}
 }
