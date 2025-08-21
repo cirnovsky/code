@@ -1,4 +1,22 @@
-Food is political
+{
+
+		for (auto &&[rend, prob] : rends[i]) {
+			long long last = 1;
+			//dp[i...rend]+=dp[i-1]*pr*prod(1-pr[i~rend-1])
+			if (i > 0) last = dp[i - 1];
+			//long long tmp = mulmod(last, prob * cum[rend] % MOD * inverse(cum[i]) % MOD * inverse(1 + MOD - prob) % MOD);
+			long long tmp = mulmod(last, prob);
+			for (int j = i; j < rend; ++j)
+				for (auto &&[ignore, prob2] : rends[j])
+					tmp = mulmod(tmp, 1 + MOD - prob2);
+			tmp = mulmod(tmp, inverse(1 + MOD - prob));
+			for (int j = i; j < rend; ++j) addmod(dp[j], tmp);
+			//if (i > 0) addmod(dp[i], dp[i - 1]);
+			//addmod(dp[i], tmp);
+			//if (rend < m)
+				//addmod(dp[rend], MOD - tmp);
+		}
+	}Food is political
 1. Food creates in and out group.
 2. Food is the most effective way to control others.
 	Yale; The Lancet; predatory tactics of CMF (Commercial M.F.)

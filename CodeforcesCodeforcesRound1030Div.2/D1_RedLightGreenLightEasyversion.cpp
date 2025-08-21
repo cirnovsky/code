@@ -1,3 +1,5 @@
+// time-limit: 4000
+// problem-url: https://codeforces.com/contest/2118/problem/D1
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -22,7 +24,11 @@ IT bisect(IT first, IT last, long long x) {
 
 void dfs(int u) {
 	tag[u] = 1;
-	if (adj[u] >= 0 && !tag[adj[u]]) dfs(adj[u]);
+	if (adj[u] >= 0) {
+		int v = adj[u];
+		if (!tag[v]) dfs(v);
+		else tag[u] = 2;
+	}
 }
 
 void solve() {
@@ -54,7 +60,7 @@ void solve() {
 		j = bisect(vec.begin(), vec.end(), p[i]);
 		if (j != vec.begin()) {
 			adj[i] = *(j - 1) + n;
-			dd[*(j - 1) + n - 1]++;
+			dd[*(j - 1) + n]++;
 		}
 	}
 	memset(tag, 0, 2 * n * sizeof *tag);
@@ -74,7 +80,7 @@ void solve() {
 		if (j != vec.end()) {
 			cout << (tag[*j] == 2 ? "NO\n" : "YES\n");
 		} else {
-			cout << "yes\n";
+			cout << "YES\n";
 		}
 	}
 }

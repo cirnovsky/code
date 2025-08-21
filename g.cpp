@@ -80,11 +80,12 @@ Tp& cmin(Tp& x, const Tp& y) {
 using namespace std;
 
 int main() {
-  puts("1");
-  int n = 1000;
-  cout << n << "\n";
-  rep(n)
-  {
-    cout << rng(1e9 - 233, 1e9 + 1) << " ";
-  }
+	int n = 20, m = 20;
+	printf("1\n%d %d\n", n, m);
+	rep(n) {
+		rep(i,m) {
+			putchar(rng(0, 114514 )%2?'B':'W');
+		}
+		puts("");
+	}
 }
