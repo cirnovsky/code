@@ -4,36 +4,38 @@
 using namespace std;
 
 const int N = 2e5;
-int l[N], r[N], d[N], suf[N], zero[N + 1];
+int l[N], r[N], d[N];
 
 void solve() {
 	int n;
 	scanf("%d", &n);
 	for (int i = 0; i < n; ++i) scanf("%d", &d[i]);
 	for (int i = 0; i < n; ++i) scanf("%d%d", &l[i], &r[i]);
-	for (int i = 0; i < n; ++i) {
-		zero[i + 1] = zero[i] + (d[i] == 0);
-	}
-	const int INF = 0x3f3f3f3f;
-	for (int i = n; i-- > 0;) {
-		suf[i] = max(i + 1 == n ? -INF : suf[i + 1], l[i] - i + zero[i + 1]);
-	}
 	int cur = 0;
+	vector<int> prev;
 	for (int i = 0; i < n; ++i) {
-		if (d[i] != -1) {
-			cur += d[i];
-		} else if (suf[i] >= cur - zero[i] - i + 1) {
+		if (d[i] == -1) prev.push_back(i);
+		else cur += d[i];
+		while (cur < l[i]) {
+			if (prev.empty()) {
+				puts("-1");
+				return;
+			}
 			cur++;
-			d[i] = 1;
-		} else {
-			d[i] = 0;
+			d[prev.back()] = 1;
+			prev.pop_back();
 		}
-		if (!(l[i] <= cur && cur <= r[i])) {
-			puts("-1");
-			return;
+		while (cur + (int) prev.size() > r[i]) {
+			if (prev.empty()) {
+				puts("-1");
+				return;
+			}
+			d[prev.back()] = 0;
+			prev.pop_back();
 		}
 	}
-	for (int i = 0; i < n; ++i) printf("%d%c", d[i], " \n"[i == n - 1]);
+	for (int i = 0; i < n; ++i)
+		printf("%d%c", max(0, d[i]), " \n"[i == n - 1]);
 }
 
 int main() {
