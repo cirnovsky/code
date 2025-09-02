@@ -1,107 +1,71 @@
-MOD = 998244353
-
 import sys
-sys.setrecursionlimit(1 << 25)
-
-def contains(a, b):
-    return a in b
-
-def prune(patterns):
-    patterns = sorted(set(patterns), key=len)  # unique, increasing length
-    kept = []
-    for i, p in enumerate(patterns):
-        if any(contains(p, q) for q in patterns if len(q) > len(p)):
-            continue
-        kept.append(p)
-    # The above removes p if it is contained in any longer q.
-    # Faster: scan once using the sorted list.
-    kept2 = []
-    for i, p in enumerate(patterns):
-        if not any(p in patterns[j] for j in range(i+1, len(patterns))):
-            kept2.append(p)
-    return kept2
-
-def build_automaton(patterns):
-    nxt = [[-1]*26]  # trie edges
-    link = [-1]      # failure link
-    out  = [0]       # bitmask of matched patterns
-
-    def add_word(w, idx):
-        node = 0
-        for ch in w:
-            c = ord(ch) - 97
-            if nxt[node][c] == -1:
-                nxt[node][c] = len(nxt)
-                nxt.append([-1]*26)
-                link.append(0)
-                out.append(0)
-            node = nxt[node][c]
-        out[node] |= (1 << idx)
-
-    for i, w in enumerate(patterns):
-        add_word(w, i)
-
-    from collections import deque
-    q = deque()
-    # Initialize root transitions
-    for c in range(26):
-        if nxt[0][c] != -1:
-            link[nxt[0][c]] = 0
-            q.append(nxt[0][c])
-        else:
-            nxt[0][c] = 0
-    # BFS build
-    while q:
-        v = q.popleft()
-        out[v] |= out[link[v]]
-        for c in range(26):
-            u = nxt[v][c]
-            if u != -1:
-                link[u] = nxt[link[v]][c]
-                q.append(u)
-            else:
-                nxt[v][c] = nxt[link[v]][c]
-    return nxt, out
 
 def solve():
-    import sys
-    input = sys.stdin.readline
-    N, L = map(int, input().split())
-    S = [input().strip() for _ in range(N)]
+    t = int(input());
+    out_lines = []
+    for _ in range(t):
+        n = int(input());
+        h = [0]*(n+1)  # 1-indexed
+        h = list(map(int, input().split()))
+        h.insert(0, 0)
 
-    P = prune(S)
-    K = len(P)
-    if K == 0:
-        print(pow(26, L, MOD))
-        return
+        # 1) Baseline cost
+        base = h[1]
+        for i in range(2, n+1):
+            base += max(0, h[i] - 1)
 
-    nxt, out = build_automaton(P)
-    Ssz = len(nxt)
-    full = (1 << K) - 1
+        if n == 2:
+            out_lines.append(str(base))
+            continue
 
-    # dp over masks; to save memory use two layers over length
-    dp = [ [0]*(1<<K) for _ in range(Ssz) ]
-    dp[0][0] = 1
+        # 2) Precompute next index >= i with h[idx] > 1
+        next_gt1 = [n+1]*(n+2)
+        last = n+1
+        for i in range(n, 0, -1):
+            if h[i] > 1:
+                last = i
+            next_gt1[i] = last
 
-    for _ in range(L):
-        ndp = [ [0]*(1<<K) for _ in range(Ssz) ]
-        for v in range(Ssz):
-            row = dp[v]
-            # small optimization: skip empty rows
-            if not any(row):
-                continue
-            for mask in range(1<<K):
-                ways = row[mask]
-                if ways == 0:
-                    continue
-                for c in range(26):
-                    u = nxt[v][c]
-                    m2 = mask | out[u]
-                    ndp[u][m2] = (ndp[u][m2] + ways) % MOD
-        dp = ndp
+        # 3) For each cut position j in [2..n-1], compute weight and block end t_j
+        # dp over j: 0 if not usable; dp size n+2 for safe indexing
+        w = [0]*(n+2)
+        block_end = [0]*(n+2)
 
-    ans = sum(dp[v][full] for v in range(Ssz)) % MOD
-    print(ans)
+        for j in range(2, n):  # cannot cut at n
+            x = h[j+1]
+            # Delta(j) = 1 + [max(0, x-j) - max(0, x-1)]
+            delta = 1 + (max(0, x - j) - max(0, x - 1))
+            if delta < 0:
+                w[j] = -delta  # benefit if we take this cut
+            else:
+                w[j] = 0
+
+            # Compute t_j (last index invalidated by choosing this cut)
+            if x > j:
+                t = j
+            else:
+                # j+1 dies; then a run of 1's above (each gets 1 fall) also die
+                # next_gt1[j+2] is first index >= j+2 with h[idx] > 1 (or n+1)
+                first_gt1 = next_gt1[j+2] if (j+2) <= n else n+1
+                t = (first_gt1 - 1)  # inclusive last dead
+            block_end[j] = t
+
+        # 4) DP (choose non-overlapping beneficial cuts to maximize total benefit)
+        dp = [0]*(n+3)
+        for j in range(n-1, 1, -1):
+            # skip invalid/zero-weight cuts seamlessly
+            skip = dp[j+1]
+            take = w[j] + dp[block_end[j] + 1]
+            if take > skip:
+                dp[j] = take
+            else:
+                dp[j] = skip
+
+        ans = base - dp[2]
+        out_lines.append(str(ans))
+
+    print("\n".join(out_lines))
+
 
 if __name__ == "__main__":
     solve()
