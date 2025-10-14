@@ -6,6 +6,6 @@ content=$(cat $DIR)
 
 echo "$content -g" > $DIR
 
-_cp "$@"
+ccp "$@"
 
 echo "$content" > $DIR

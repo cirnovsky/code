@@ -1,0 +1,22 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-Wshadow",
+      "-std=c++20",
+      "-I",
+      ".",
+      "-DLOCAL",
+      "-fsanitize=undefined",
+      "-o",
+      "m",
+      "m.cpp"
+    ],
+    "directory": "/Users/cirnovsky/repos/code",
+    "file": "/Users/cirnovsky/repos/code/m.cpp",
+    "output": "/Users/cirnovsky/repos/code/m"
+  }
+]

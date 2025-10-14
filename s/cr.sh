@@ -3,9 +3,9 @@
 # Loop through each provided filename
 if [ -f "$1" ]; then
     # Run _cp and only run _run if _cp succeeds
-    _cp "$1"
+    ccp "$1"
     if [ "$?" -eq 0 ]; then
-        _run $@
+        rrun $@
     else
         echo "Compilation failed. Skipping run."
     fi

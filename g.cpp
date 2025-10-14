@@ -80,12 +80,14 @@ Tp& cmin(Tp& x, const Tp& y) {
 using namespace std;
 
 int main() {
-	int n = 20, m = 20;
-	printf("1\n%d %d\n", n, m);
-	rep(n) {
-		rep(i,m) {
-			putchar(rng(0, 114514 )%2?'B':'W');
-		}
-		puts("");
+	cout << "1\n";
+	int n = sqrt(2.5e5), m = n;
+	cout << n << " " << m << "\n";
+	vvi a(n, vi(m));
+	rep(i,n) rep(j,m) a[i][j] = 1;
+	rep(i,n) {
+		rep(j,m)
+			cout << a[i][j];
+		cout << "\n";
 	}
 }

@@ -1,89 +1,95 @@
-#include <stdio.h>
-#include <string.h>
-#include <algorithm>
+
+#include <set>
+#include <map>
 #include <queue>
+#include <numeric>
+#include <limits.h>
+#include <assert.h>
+#include <string>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <string.h>
+#include <random>
+#include <chrono>
+
+/// {{{ definitions
+using ll = long long;
+using ull = unsigned long long;
+using db = double;
+using ldb = long double;
+
+#define pb push_back
+#define eb emplace_back
+#define mkp std::make_pair
+#define all(u) (u).begin(), (u).end()
+#define part(u, l, r) (u).begin() + (l), (u).begin() + (r)
+#define slice(u, l, r) vi(part(u, l, r))
+#define len(u) ((int) (u).size())
+std::mt19937 rnd(std::chrono::steady_clock::now().time_since_epoch().count());
+#define rng(l, r) std::uniform_int_distribution<ll>(l, r - 1)(rnd)
+
+#define rep1(n) for (int _ = 0; _ < n; ++_)
+#define rep2(i, n) for (int i = 0; i < (n); ++i)
+#define rep3(i, l, h) for (auto i = (l); i < (h); ++i)
+#define rep4(i, l, h, d) for (auto i = (l); i < (h); i += (d))
+#define drep1(n) for (int _ = (n) - 1; _ >= 0; --_)
+#define drep2(i, n) for (int i = (n) - 1; i >= 0; --i)
+#define drep3(i, h, l) for (auto i = (h) - 1; i >= l; --i)
+#define drep4(i, h, l, d) for (auto i = (h) - 1; i >= l; i -= (d))
+#define __overload(a, b, c, d, e, ...) e
+#define rep(...) __overload(__VA_ARGS__, rep4, rep3, rep2, rep1)(__VA_ARGS__)
+#define drep(...) __overload(__VA_ARGS__, drep4, drep3, drep2, drep1)(__VA_ARGS__)
+
+using vi = std::vector<int>;
+using vvi = std::vector<vi>;
+using vll = std::vector<ll>;
+using vvll = std::vector<vll>;
+using bsi = std::basic_string<int>;
+template <typename Tp>
+using vt = std::vector<Tp>;
+template <typename Tp>
+using bst = std::basic_string<Tp>;
+
+template <typename Tp> void rd(Tp& x) { std::cin >> x; }
+template <typename Tp, typename... Args>
+void rd(Tp& x, Args&... args) { rd(x), rd(args...); }
+template <typename Tp>
+void rds(Tp* v, int n) { for (int i = 0; i < n; ++i) rd(v[i]); }
+template <typename Tp>
+void rds(std::vector<Tp> &v) { for (Tp& x : v) rd(x); }
+template <typename Tp>
+void prts(std::vector<Tp> &v, char sep=' ', char end='\n') {
+	const int n = v.size();
+	if (n == 0) { std::cout << end; return; }
+	for (int i = 0; i < n - 1; ++i) std::cout << v[i] << sep;
+	std::cout << v[n - 1] << end;
+}
+template <typename Tp>
+Tp& cmax(Tp& x, const Tp& y) { return x = std::max(x, y); }
+template <typename Tp>
+Tp& cmin(Tp& x, const Tp& y) { return x = std::min(x, y); } // }}}
+
 using namespace std;
 
-const int N = 5e2;
-const int INF = 0x3f3f3f3f3f;
-
-int f_prev[N + 1][N + 1], ch[N][2], cnt, fail[N], a[N], b[N];
-
-void init() {
-	cnt = 1;
-	memset(ch, 0, sizeof ch);
-	memset(fail, 0, sizeof fail);
-}
-
-void insert(int *first, int *last) {
-	int i = 0;
-	for (; first != last; ++first) {
-		if (ch[i][*first] == 0)
-			ch[i][*first] = cnt++;
-		i = ch[i][*first];
-	}
-}
-
-void build() {
-	queue<int> qu;
-	for (int i = 0; i < 2; ++i) {
-		if (ch[0][i])
-			qu.push(ch[0][i]);
-	}
-	while (qu.size()) {
-		int i = qu.front();
-		qu.pop();
-		for (int k = 0; k < 2; ++k) {
-			if (ch[i][k]) {
-				fail[ch[i][k]] = ch[fail[i]][k];
-				qu.push(ch[i][k]);
-			} else {
-				ch[i][k] = ch[fail[i]][k];
-			}
-		}
-	}
-}
-
-int main() {
+void solve()
+{
 	int n, m;
-	scanf("%d%d", &n, &m);
-	for (int i = 0; i < n; ++i)
-		scanf("%1d", &a[i]);
-	for (int i = 0; i < m; ++i)
-		scanf("%1d", &b[i]);
-	//dp[i][j][k]=the minimum number of operations to adjust a[0..i)
-	//	such that b occurs exactly k times in it, and b[0..j)
-	//	matches with a[j-i..i)
-	//if a[i]=b[j]:
-	//	dp[i+1][j+1][k+[j==m]] <- dp[i][j][k]
-	//else:
-	//	dp[i+1][j+1][k+[j==m]] <- dp[i][j][k]+1
-	//	dp[i+1][nxt[j]][k] <- dp[i][j][k]
-	//all people locked up their souls
-	init();
-	insert(b, b + m);
-	build();
-	memset(f_prev, 0x3f, sizeof f_prev);
-	f_prev[0][0] = 0;
-	for (int i = 1; i < n; ++i) {
-		static int f_cur[N + 1][N + 1];
-		for (int j = 0; j <= m; ++j)
-			memset(f_cur, 0x3f, sizeof f_cur);
-		for (int j = 0; j <= m; ++j) {
-			for (int k = 0; k < min(0, i - m + 1); ++k) {
-				for (int t = 0; t < 2; ++t) {
-					int& v_cur = f_cur[ch[j][t]][k + (ch[j][t] == m)];
-					v_cur = min(v_cur, f_prev[j][k] + (t == a[ch[j][t] - 1]));
-				}
-			}
-		}
-		for (int j = 0; j <= m; ++j)
-			memcpy(f_prev[j], f_cur[j], min(0, i - m + 1) * sizeof *f_cur[j]);
-	}
-	for (int k = 0; k <= n - m + 1; ++k) {
-		int ans = INF;
-		for (int j = 0; j <= m; ++j)
-			ans = min(ans, f_prev[j][k]);
-		printf("%d\n", ans);
+	cin >> n >> m;
+	string op;
+	cin >> op;
+	vi a(m);
+	rds(a);
+
+int main()
+{
+#ifndef LOCAL
+	cin.tie(nullptr)->sync_with_stdio(0);
+#endif
+	int t;
+	cin >> t;
+	while (t--) {
+		solve();
 	}
 }

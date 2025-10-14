@@ -19,13 +19,13 @@ echo "Running $executable..."
 # Run based on number of arguments
 case "$#" in
     1)
-        /usr/bin/time -f "\nTime: %Es\nMemory: %MkB" ./"$executable"
+        gtime -f "\nTime: %Es\nMemory: %MkB" ./"$executable"
         ;;
     2)
-        /usr/bin/time -f "\nTime: %Es\nMemory: %MkB" ./"$executable" < "$2"
+        gtime -f "\nTime: %Es\nMemory: %MkB" ./"$executable" < "$2"
         ;;
     3)
-        /usr/bin/time -f "\nTime: %Es\nMemory: %MkB" ./"$executable" < "$2" > "$3"
+        gtime -f "\nTime: %Es\nMemory: %MkB" ./"$executable" < "$2" > "$3"
         ;;
     *)
         echo "Too many arguments. Usage: $0 <executable> [input_file] [output_file]"

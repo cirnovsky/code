@@ -23,10 +23,10 @@ for file in "$@"; do
 	if [[ $file == *.c ]]; then
 		cc="gcc"
 	else
-		cc="g++-14"
+		cc="g++"
 	fi
 	cmd="$cc ${file} -o ${file%.*} ${compilation_params}"
-	echo -e "\e[1;32;41mCommand\e[0m \e[3;35m$cmd\e[0m"
+	printf "\e[1;32;41mCommand\e[0m \e[3;35m$cmd\e[0m\n"
 	eval $cmd
 
         # Check if compilation was successful

@@ -1,10 +1,4 @@
 
-#include <set>
-#include <map>
-#include <queue>
-#include <numeric>
-#include <limits.h>
-#include <assert.h>
 #include <string>
 #include <iostream>
 #include <vector>
@@ -12,6 +6,7 @@
 #include <string>
 #include <random>
 #include <chrono>
+#include <fstream>
 
 /// {{{ definitions
 using ll = long long;
@@ -23,8 +18,6 @@ using ldb = long double;
 #define eb emplace_back
 #define mkp std::make_pair
 #define all(u) (u).begin(), (u).end()
-#define part(u, l, r) (u).begin + (l), (u).begin() + (r)
-#define slice(u, l, r) __typeof(u)(part(u, l, r))
 #define len(u) ((int) (u).size())
 std::mt19937 rnd(std::chrono::steady_clock::now().time_since_epoch().count());
 #define rng(l, r) std::uniform_int_distribution<ll>(l, r - 1)(rnd)
@@ -89,19 +82,28 @@ Tp& cmin(Tp& x, const Tp& y) {
 
 using namespace std;
 
-#include <fstream>
-
 int main() {
-	ifstream io("out"), is("std");
-	int t = 4495;
-	rep(n,2,31) {
-		rep(k,0,n*(n-1)/2+1) {
-			string o, s;
-			getline(io, o);
-			getline(is, s);
-			if (o.length() == 1 && s.length() != 1) {
-				printf(" %d %d\n", n, k);
+	ifstream ii("in"), io("out");
+	int t; ii >> t;
+	while (t--) {
+		int n, k;
+		ii >> n >> k;
+		vi a(n);
+		rep(i,n)
+			io >> a[i];
+		if (a[0] == 0 && a[1] == 0)
+			continue;
+		int cnt = 0;
+		rep(l,n)
+			rep(r,l+2,n+1) {
+				cnt += is_sorted(a.begin() + l, a.begin() + r);
 			}
+		if (cnt != n * (n - 1) / 2 - k) {
+			cout << " " << cnt << " " << n * (n - 1) / 2 - k << "\n";
+			puts("CAONIMA");
+			return 1;
 		}
 	}
+	puts("SHAN");
+	return 0;
 }
