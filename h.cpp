@@ -1,107 +1,55 @@
 
-#include <set>
-#include <map>
-#include <queue>
-#include <numeric>
-#include <limits.h>
-#include <assert.h>
-#include <string>
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <string>
-#include <random>
-#include <chrono>
-
-/// {{{ definitions
-using ll = long long;
-using ull = unsigned long long;
-using db = double;
-using ldb = long double;
-
-#define pb push_back
-#define eb emplace_back
-#define mkp std::make_pair
-#define all(u) (u).begin(), (u).end()
-#define part(u, l, r) (u).begin + (l), (u).begin() + (r)
-#define slice(u, l, r) __typeof(u)(part(u, l, r))
-#define len(u) ((int) (u).size())
-std::mt19937 rnd(std::chrono::steady_clock::now().time_since_epoch().count());
-#define rng(l, r) std::uniform_int_distribution<ll>(l, r - 1)(rnd)
-
-#define rep1(n) for (int _ = 0; _ < n; ++_)
-#define rep2(i, n) for (int i = 0; i < (n); ++i)
-#define rep3(i, l, h) for (auto i = (l); i < (h); ++i)
-#define rep4(i, l, h, d) for (auto i = (l); i < (h); i += (d))
-#define drep1(n) for (int _ = (n) - 1; _ >= 0; --_)
-#define drep2(i, n) for (int i = (n) - 1; i >= 0; --i)
-#define drep3(i, h, l) for (auto i = (h) - 1; i >= l; --i)
-#define drep4(i, h, l, d) for (auto i = (h) - 1; i >= l; i -= (d))
-#define __overload(a, b, c, d, e, ...) e
-#define rep(...) __overload(__VA_ARGS__, rep4, rep3, rep2, rep1)(__VA_ARGS__)
-#define drep(...) __overload(__VA_ARGS__, drep4, drep3, drep2, drep1)(__VA_ARGS__)
-
-using vi = std::vector<int>;
-using vvi = std::vector<vi>;
-using vll = std::vector<ll>;
-using vvll = std::vector<vll>;
-using bsi = std::basic_string<int>;
-template <typename Tp>
-using vt = std::vector<Tp>;
-template <typename Tp>
-using bst = std::basic_string<Tp>;
-
-template <typename Tp> void rd(Tp& x) { std::cin >> x; }
-template <typename Tp, typename... Args>
-void rd(Tp& x, Args&... args) {
-	rd(x), rd(args...);
-}
-template <typename Tp>
-void rds(Tp* v, int n) {
-	for (int i = 0; i < n; ++i)
-		rd(v[i]);
-}
-template <typename Tp>
-void rds(std::vector<Tp> &v) {
-	for (Tp& x : v)
-		rd(x);
-}
-template <typename Tp>
-void prts(std::vector<Tp> &v, char sep=' ', char end='\n') {
-	const int n = v.size();
-
-	if (n == 0) {
-		std::cout << end;
-		return;
-	}
-	for (int i = 0; i < n - 1; ++i)
-		std::cout << v[i] << sep;
-	std::cout << v[n - 1] << end;
-}
-template <typename Tp>
-Tp& cmax(Tp& x, const Tp& y) {
-	return x = std::max(x, y);
-}
-template <typename Tp>
-Tp& cmin(Tp& x, const Tp& y) {
-	return x = std::min(x, y);
-} // }}}
-
+// brute_check.cpp
+#include <bits/stdc++.h>
 using namespace std;
 
-#include <fstream>
+pair<long long,long long> solve_fast(const vector<int>& a) {
+    int n = a.size();
+    vector<int> ev;
+    for (int x : a) if (x%2==0) ev.push_back(x);
+    if (ev.size() >= 2) return {ev[0], ev[1]};
+    if (ev.size() == 1) {
+        int y = ev[0];
+        for (int i = 0; i < n; ++i) {
+            if (a[i] >= y) break;
+            if (((y % a[i]) % 2) == 0) return {a[i], y};
+        }
+    }
+    for (int i = 0; i+1 < n; ++i) {
+        if (((a[i+1] % a[i]) % 2) == 0) return {a[i], a[i+1]};
+    }
+    return {-1,-1};
+}
 
-int main() {
-	ifstream io("out"), is("std");
-	int t = 4495;
-	rep(n,2,31) {
-		rep(k,0,n*(n-1)/2+1) {
-			string o, s;
-			getline(io, o);
-			getline(is, s);
-			if (o.length() == 1 && s.length() != 1) {
-				printf(" %d %d\n", n, k);
-			}
-		}
-	}
+pair<long long,long long> solve_bruteforce(const vector<int>& a) {
+    int n = a.size();
+    for (int i = 0; i < n; ++i)
+        for (int j = i+1; j < n; ++j)
+            if (((a[j] % a[i]) % 2) == 0)
+                return {a[i], a[j]};
+    return {-1,-1};
+}
+
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    // generate random tests or run manual cases
+    mt19937 rng(123);
+    for (int iter=0; iter<100000; ++iter) {
+        int n = uniform_int_distribution<int>(2,8)(rng);
+        set<int> s;
+        while ((int)s.size() < n) s.insert(uniform_int_distribution<int>(1,100)(rng));
+        vector<int> a(s.begin(), s.end());
+        auto f = solve_fast(a);
+        auto b = solve_bruteforce(a);
+        if (f != b) {
+            cerr << "Mismatch on test:\n";
+            cerr << a.size() << "\n";
+            for (int x : a) cerr << x << " ";
+            cerr << "\nfast: " << f.first << " " << f.second << "\nbrute: " << b.first << " " << b.second << "\n";
+            return 0;
+        }
+    }
+    cerr << "No mismatch found in random tests.\n";
+    return 0;
 }

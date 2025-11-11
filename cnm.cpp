@@ -1,3 +1,4 @@
+
 #include <bits/stdc++.h>
 
 /// {{{ definitions
@@ -16,6 +17,7 @@ template <typename Tp> void rd(Tp& x) { std::cin >> x; }
 template <typename Tp, typename... Args> void rd(Tp& x, Args&... args) { rd(x), rd(args...); }
 template <typename Tp> void rds(Tp* v, int n) { for (int i = 0; i < n; ++i) rd(v[i]); }
 template <typename Tp> void rds(std::vector<Tp> &v) { for (Tp& x : v) rd(x); }
+template <typename Tp> void prts(std::vector<Tp> v, char sep=' ', char end='\n') { const int n = v.size(); if (n == 0) { std::cout << end; return; } for (int i = 0; i < n - 1; ++i) std::cout << v[i] << sep; std::cout << v[n - 1] << end; }
 template <typename Tp> Tp& cmax(Tp& x, const Tp& y) { return x = std::max(x, y); }
 template <typename Tp> Tp& cmin(Tp& x, const Tp& y) { return x = std::min(x, y); } // }}}
 
@@ -27,6 +29,17 @@ using namespace std;
 #define debug(x...)
 #endif
 
-int main() {
+int solve() {
+	int n, m;
+	cin >> n >> m;
+
+int main()
+{
+#ifndef LOCAL
 	cin.tie(nullptr)->sync_with_stdio(0);
+#endif
+	int t;
+	cin >> t;
+	while (t--)
+		cout << solve() << "\n";
 }

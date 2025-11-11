@@ -1,4 +1,6 @@
+
 #include <bits/stdc++.h>
+#include <utility>
 
 /// {{{ definitions
 using ll = long long; using ull = unsigned long long; using db = double; using ldb = long double;
@@ -27,6 +29,41 @@ using namespace std;
 #define debug(x...)
 #endif
 
-int main() {
+//日你妈又读错了
+void solve() {
+	int n;
+	cin >> n;
+	vi a(n);
+	rds(a);
+	string target;
+	cin >> target;
+
+	int mn = 0, mx = 0;
+	for (int i=0;i<n;++i) {
+		if (a[mn] > a[i])
+			mn = i;
+		if (a[mx] < a[i])
+			mx = i;
+	}
+	if (target[0] == '1' || target[n-1] == '1' || target[mn] == '1' || target[mx] == '1') {
+		cout << "-1\n";
+		return;
+	}
+	cout << "5\n";
+	cout << 1 << " " << mn+1 << "\n";
+	cout << 1 << " " << mx+1 << "\n";
+	cout << mn+1 << " " << n << "\n";
+	cout << mx+1 << " " << n << "\n";
+	cout << min(mn, mx)+1 << " " << max(mn, mx)+1 << "\n";
+}
+
+int main()
+{
+#ifndef LOCAL
 	cin.tie(nullptr)->sync_with_stdio(0);
+#endif
+	int t;
+	cin >> t;
+	while (t--)
+		solve();
 }
