@@ -1,0 +1,1 @@
+/home/cirnovsky/repos/code/s/cp.sh
