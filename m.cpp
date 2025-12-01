@@ -29,9 +29,5 @@ using namespace std;
 #endif
 
 int main() {
-	cin.tie(nullptr)->sync_with_stdio(0);
-	int n;
-	cin >> n;
-	vi a(n);
-	debug(a);
+	cout << "canonima";
 }
