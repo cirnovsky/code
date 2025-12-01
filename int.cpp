@@ -1,6 +1,5 @@
 
 #include <bits/stdc++.h>
-#include <vector>
 
 /// {{{ definitions
 using ll = long long; using ull = unsigned long long; using db = double; using ldb = long double;
@@ -29,10 +28,36 @@ using namespace std;
 #define debug(x...)
 #endif
 
+vi cnm;
+int mex(int l, int r) {
+	auto tmp = slice(cnm, l, r);
+	sort(all(tmp));
+	if (tmp[0])
+		return 0;
+	for (int i=0;i+1<r-l;++i) {
+		if (tmp[i+1] != tmp[i]+1)
+			return tmp[i]+1;
+	}
+	return tmp.back() + 1;
+}
+
+using P = pair<int, int> ;
 int main() {
 	cin.tie(nullptr)->sync_with_stdio(0);
-	int n;
-	cin >> n;
-	vi a(n);
-	debug(a);
+	int t;
+	cin >> t;
+	while (t--) {
+		int n, q;
+		cin >> n >> q;
+		vector<P> qs(q);
+		for (auto &[l, r] : qs)
+			cin >> l >> r, l--;
+		cnm = vi(n); rds(cnm);
+		int ans = 0;
+		for (auto [l, r] : qs) {
+			debug(l, r,mex(l, r));
+			cmax(ans, mex(l, r));
+		}
+		cout << ans << "\n";
+	}
 }

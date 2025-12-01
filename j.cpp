@@ -1,89 +1,98 @@
 
+
 #include <bits/stdc++.h>
-#include <cassert>
-#include <set>
+
+// {{{ definitions
+using ll = long long; using ull = unsigned long long; using db = double; using ldb = long double;
+
+#define all(u) (u).begin(), (u).end()
+#define part(u, l, r) (u).begin() + (l), (u).begin() + (r)
+#define slice(u, l, r) vi(part(u, l, r))
+#define len(u) ((int) (u).size())
+std::mt19937 rnd(std::chrono::steady_clock::now().time_since_epoch().count());
+#define rng(l, r) std::uniform_int_distribution<ll>(l, r - 1)(rnd)
+
+using vi = std::vector<int>; using vvi = std::vector<vi>; using vll = std::vector<ll>; using vvll = std::vector<vll>; using bsi = std::basic_string<int>; template <typename Tp> using vt = std::vector<Tp>; template <typename Tp> using bst = std::basic_string<Tp>;
+
+template <typename Tp> void rd(Tp& x) { std::cin >> x; }
+template <typename Tp, typename... Args> void rd(Tp& x, Args&... args) { rd(x), rd(args...); }
+template <typename Tp> void rds(Tp* v, int n) { for (int i = 0; i < n; ++i) rd(v[i]); }
+template <typename Tp> void rds(std::vector<Tp> &v) { for (Tp& x : v) rd(x); }
+template <typename Tp> Tp& cmax(Tp& x, const Tp& y) { return x = std::max(x, y); }
+template <typename Tp> Tp& cmin(Tp& x, const Tp& y) { return x = std::min(x, y); } // }}}
+
 using namespace std;
 
-#define len(u) ((int) (u).size())
-
-vector<array<int, 4>> ans;
-
-bool valid(string const &s, int m) {
-	vector<pair<int, int>> a, b;
-
-	int n = len(s);
-	vector<char> used(n);
-
-	for (int i = 0, j = 0; i < n; ++i) {
-		if (len(a) == m)
-			break;
-		if (s[i] == 'I') {
-			while (j <= i)
-				j++;
-			while (j < n && s[j] != 'C')
-				j++;
-			if (j < n) {
-				a.emplace_back(i, j);
-				used[i] = used[j] = 1;
-			}
-		}
-	}
-	if (len(a) < m)
-		return 0;
-	for (int i = n, j = n; i-- > 0; ) {
-		if (len(b) == m)
-			break;
-		if (!used[i] && s[i] == 'C') {
-			while (j >= i)
-				j--;
-			while (j >= 0 && (s[j] != 'P' || used[j]))
-				j--;
-			if (j >= 0) {
-				b.emplace_back(j, i);
-				used[j] = used[i] = 1;
-			}
-		}
-	}
-	if (len(b) < m)
-		return 0;
-	int i = m, j = 0;
-	while (i > 0) {
-		auto [p, q] = a[i-1];
-		auto [u, v] = b[j];
-		if (q > u)
-			return 0;
-		i--, j++;
-	}
-	for (int i = 0; i < m; ++i)
-		ans.push_back({a[i].first, a[i].second, b[m-i-1].first, b[m-i-1].second});
-	return 1;
-}
-
+#ifdef LOCAL
+#include "t/dbg"
+#else
+#define debug(x...)
+#endif
 void solve() {
+	// most shitty problem
+	int n, q;
+	rd(n, q);
 	string s;
 	cin >> s;
-	//bs on ans
-	//use first m number of Is
-	int n = len(s);
-	int ok = 0, ng = n/4+1;
-	while (ok+1 < ng) {
-		int m = ok+(ng-ok)/2;
-		ans.clear();
-		ans.shrink_to_fit();
-		if (valid(s, m))
-			ok = m;
-		else
-			ng = m;
+	int base = 0;
+	for (int i = 0; i < n; ++i) {
+		char cur = s[i], nxt = i + 1 < n ? s[i + 1] : '.';
+		if (cur == 'X')
+			base += 10;
+		else if (cur == 'V')
+			base += 5;
+		else if (cur == 'I')
+			cur += nxt == 'X' || nxt == 'V' ? -1 : 1;
 	}
-	ans.clear();
-	ans.shrink_to_fit();
-	valid(s, ok);
-	set<int> tmp;
-	cout << ok << "\n";
-	for (auto &p : ans)
-		tmp.insert(p[0]), tmp.insert(p[1]), tmp.insert(p[2]), tmp.insert(p[3]),
-		cout << p[0]+1 << " " << p[1]+1 << " " << p[2]+1 << " " << p[3]+1 << "\n";
-	assert(len(tmp) == 4*ok);
+
+	int i_xv = 0, i_ = 0, _xv = 0, __ = 0, _ = 0;
+	for (int i = 0; i < n; ++i) {
+		int lc = i > 0 ? s[i - 1] : '.', rc = i + 1 < n ? s[i + 1] : '.';
+		if (s[i] == '?') {
+			if (lc == 'I' && (rc == 'X' || rc == 'V'))
+				i_xv++, s[i] = '.';
+			else if (lc == 'I')
+				i_++, s[i] = '.';
+			else if (rc == 'X' || rc == 'V')
+				_xv++, s[i] = '.';
+		}
+	}
+	for (int i = 0; i < n; ++i) {
+		if (s[i] == '?' && i + 1 < n && s[i + 1] == '?')
+			__++;
+	}
+	_ = count(all(s), '?');
+
+	int total = i_xv + i_ + _xv + 2 * __ + _;
+
+	while (q--) {
+		int __i_xv = i_xv, __i_ = i_, ___xv = _xv, ____ = __, ___ = _;
+
+		int cx, cv, vi;
+		rd(cx, cv, ci);
+
+		int cxv = cx + cv;
+		int ui = min(total, vi), uxv = total - ui;
+
+		int delta = 5 * min(uxv, cv) + 10 * max(uxv - cv, 0);
+
+		assert(uxv <= cxv);
+		// ui = #I used
+		// uxv = #X/V used
+		// prepend I to existing X/V
+		// append X/V to existing I
+		// fill a pair of adjacent vacancies with I(X/V)
+
+		int Ii_xv = min(ui, i_xv);
+		ui -= Ii_xv, i_xv -= Ii_xv;
+
+		int XVi_xv = min(uxv, i_xv);
+		uxv -= XVi_xv, i_xv -= XVi_xv;
+
+		assert(i_xv == 0);
+
+
+		i_xv = __i_xv, i_ = __i_, _xv = ___xv, __ = ____, _ = ___;
 }
 
 int main() {
