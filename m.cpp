@@ -29,5 +29,10 @@ using namespace std;
 #endif
 
 int main() {
-	cout << "canonima";
+	// if a cell is strictly shorter than all its neighbors
+	// must have a hole
+	// equal adjacent valleys choose one
+	// if (x,y) after subtraction drops below an adjacent valley
+	// the valley is dead
+	// if (x,y) 
 }
