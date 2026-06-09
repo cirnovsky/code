@@ -1,2 +1,29 @@
 bits
 **/.DS_Store
+.mypy_cache
+
+
+# Added by cargo
+
+/target
+
+# Editor backups / swap files
+*~
+*.swp
+*.swo
+.vscode/
+.vimrc
+
+# Compiled binaries / build artifacts
+a.out
+*.dSYM/
+*.o
+*.obj
+*.exe
+/main
+/test
+/k
+/my
+/out
+/tmp.s
+/main.s

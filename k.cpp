@@ -1,4 +1,6 @@
-#include "bits/stdc++.h"
+
+#include <bits/stdc++.h>
+#include <string>
 
 /// {{{ definitions
 using ll = long long; using ull = unsigned long long; using db = double; using ldb = long double;
@@ -27,37 +29,31 @@ using namespace std;
 #define debug(x...)
 #endif
 
-long long solve() {
-  int n, k;
-  cin >> n >> k;
-  string s, t;
-  cin >> s >> t;
-  long long cnt = 1, cnt2 = 0;
-  for (int i=0;i<k;++i) {
-    long long new_cnt = cnt + cnt2, new_cnt2 = cnt2 + (1ll<<i)-cnt2*2;
-    cnt = new_cnt;
-    cnt2 = new_cnt2;
-  }
-  long long prod_ab = 0, prod_c = 0;
-  prod_ab = count(all(s), '0');
-  prod_ab *= count(all(s), '1');
-  long long tmp = count(all(t), '0');
-  tmp *= count(all(t), '1');
-  prod_ab += tmp;
-
-  int A = 0, B = 0;
-  for (int i = 0; i < n; ++i) {
-    (s[i] == t[i] ? A : B)++;
-  }
-
-  prod_c = (ll)A * B;
-
-  return prod_ab*cnt+prod_c*cnt2;
+string solve() {
+	int n;
+	cin >> n;
+	vector<string> a(n);
+	rds(a);
+	vi ins;
+	for (int i = 0; i < n; ++i) {
+		if (ins.empty())
+			ins.push_back(i);
+		else {
+			if (a[i] < a[ins[0]])
+				ins.insert(ins.begin(), i);
+			else
+				ins.push_back(i);
+		}
+	}
+	for (int i = 0; i < n; ++i)
+		cout << a[ins[i]];
+	return "\n";
 }
 
 int main() {
-  cin.tie(nullptr)->sync_with_stdio(0);
-  int t;
-  cin >> t;
-  while(t--)cout<<solve()<<"\n";
+	cin.tie(nullptr)->sync_with_stdio(0);
+	int t;
+	cin >> t;
+	while (t--)
+		cout << solve();
 }
