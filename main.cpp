@@ -1,4 +1,5 @@
 #include "bits/stdc++.h"
+#include <functional>
 
 /// {{{ definitions
 using ll = long long; using ull = unsigned long long; using db = double; using ldb = long double;
@@ -27,37 +28,57 @@ using namespace std;
 #define debug(x...)
 #endif
 
-long long solve() {
-  int n, k;
-  cin >> n >> k;
-  string s, t;
-  cin >> s >> t;
-  long long cnt = 1, cnt2 = 0;
-  for (int i=0;i<k;++i) {
-    long long new_cnt = cnt + cnt2, new_cnt2 = cnt2 + (1ll<<i)-cnt2*2;
-    cnt = new_cnt;
-    cnt2 = new_cnt2;
+bool match_bits(vi v){
+  int n=v.size();
+  vi buck(50);
+  for(auto x:v)buck[x]++;
+  for(int i=1;i<=n;++i){
+    int p=__builtin_popcount(i);
+    buck[p]--;
   }
-  long long prod_ab = 0, prod_c = 0;
-  prod_ab = count(all(s), '0');
-  prod_ab *= count(all(s), '1');
-  long long tmp = count(all(t), '0');
-  tmp *= count(all(t), '1');
-  prod_ab += tmp;
-
-  int A = 0, B = 0;
-  for (int i = 0; i < n; ++i) {
-    (s[i] == t[i] ? A : B)++;
+  for(int i:buck){
+    if(i)return 0;
   }
-
-  prod_c = (ll)A * B;
-
-  return prod_ab*cnt+prod_c*cnt2;
+  return 1;
+}
+bool has_dup(vi v){
+  sort(v.begin(),v.end());
+  int n=v.size();
+  for(int i=1;i<n;++i){
+    if(v[i]==v[i-1])return 1;
+  }
+  return 0;
+}
+ll solve(){
+  int n;
+  cin>>n;
+  int m=0;
+  while((1<<m)<=n)m++;
+  vector<int>cnts(n),nums(n);
+  for(int i=0;i<m;++i){
+    string s;
+    cin>>s;
+    for(int j=0;j<n;++j){
+      if(s[j]=='1'){
+        cnts[j]++;
+        nums[j]^=(1<<i);
+      }
+    }
+  }
+  if(has_dup(nums)||!match_bits(cnts))return 0;
+  sort(cnts.begin(),cnts.end(),greater<int>());
+  int pcount_of_n = __builtin_popcount(n);
+  ll res=1;
+  for(int i=1;i<=pcount_of_n;++i)res*=i;
+  for(int i=1;i<=m-pcount_of_n;++i)res*=i;
+  int j=0;
+  while(j<n&&cnts[j]==cnts[0])j++;
+  return res*j;
 }
 
 int main() {
   cin.tie(nullptr)->sync_with_stdio(0);
   int t;
-  cin >> t;
+  cin>>t;
   while(t--)cout<<solve()<<"\n";
 }
