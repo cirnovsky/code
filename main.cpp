@@ -30,9 +30,9 @@ using namespace std;
 void compress(vi& a){
   vi b=a;
   sort(all(b));
-  b.erase(unique(all(b), b.end()));
-  for(int i=0;i<n;++i){
-    a[i]=lower_bound(all(b),a[i])-b.begin();
+  b.erase(unique(all(b)), b.end());
+  for(auto&x:a){
+    x=lower_bound(all(b),x)-b.begin();
   }
 }
 
@@ -55,8 +55,9 @@ bool solve(){
     swap(b[from],b[to]);
     vi used(n);
     for(int i=0,j=0;i<n;i=j){
-      if(used(b[i]))return false;
+      if(used[b[i]])return false;
       while(j<n&&b[i]==b[j])j++;
+      used[b[i]]=true;
     }
     return true;
   };
@@ -73,7 +74,8 @@ bool solve(){
         i=arr[0].first;
         tie(l,r)=arr[1];
         if(move_n_check(i,l-1) || move_n_check(i,r))return true;
-      }else if(arr[1].second-arr[1].first==1){
+      }
+      if(arr[1].second-arr[1].first==1){
         i=arr[1].first;
         tie(l,r)=arr[0];
         if(move_n_check(i,l-1) || move_n_check(i,r))return true;
@@ -85,7 +87,8 @@ bool solve(){
         i=arr[0].first;
         to=arr[1].second;
         if(move_n_check(i, to))return true;
-      }else if(arr[2].second-arr[2].first==1){
+      }
+      if(arr[2].second-arr[2].first==1){
         i=arr[2].first;
         to=arr[0].second;
         if(move_n_check(i, to))return true;
@@ -94,7 +97,7 @@ bool solve(){
     }
     break;
   }
-  return false;
+  return true;
 }
 
 int main() {
