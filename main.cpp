@@ -1,5 +1,4 @@
 #include "bits/stdc++.h"
-#include <functional>
 
 /// {{{ definitions
 using ll = long long; using ull = unsigned long long; using db = double; using ldb = long double;
@@ -28,57 +27,79 @@ using namespace std;
 #define debug(x...)
 #endif
 
-bool match_bits(vi v){
-  int n=v.size();
-  vi buck(50);
-  for(auto x:v)buck[x]++;
-  for(int i=1;i<=n;++i){
-    int p=__builtin_popcount(i);
-    buck[p]--;
+void compress(vi& a){
+  vi b=a;
+  sort(all(b));
+  b.erase(unique(all(b), b.end()));
+  for(int i=0;i<n;++i){
+    a[i]=lower_bound(all(b),a[i])-b.begin();
   }
-  for(int i:buck){
-    if(i)return 0;
-  }
-  return 1;
 }
-bool has_dup(vi v){
-  sort(v.begin(),v.end());
-  int n=v.size();
-  for(int i=1;i<n;++i){
-    if(v[i]==v[i-1])return 1;
-  }
-  return 0;
-}
-ll solve(){
+
+using pii=pair<int,int>;
+bool solve(){
   int n;
   cin>>n;
-  int m=0;
-  while((1<<m)<=n)m++;
-  vector<int>cnts(n),nums(n);
-  for(int i=0;i<m;++i){
-    string s;
-    cin>>s;
-    for(int j=0;j<n;++j){
-      if(s[j]=='1'){
-        cnts[j]++;
-        nums[j]^=(1<<i);
-      }
-    }
+  vi a(n);
+  for(int i=0;i<n;++i)cin>>a[i];
+  compress(a);
+  vector<vector<pii>> inters(n);
+  for(int i=0,j=0;i<n;i=j){
+    while(j<n&&a[i]==a[j])j++;
+    inters[a[i]].emplace_back(i,j);
   }
-  if(has_dup(nums)||!match_bits(cnts))return 0;
-  sort(cnts.begin(),cnts.end(),greater<int>());
-  int pcount_of_n = __builtin_popcount(n);
-  ll res=1;
-  for(int i=1;i<=pcount_of_n;++i)res*=i;
-  for(int i=1;i<=m-pcount_of_n;++i)res*=i;
-  int j=0;
-  while(j<n&&cnts[j]==cnts[0])j++;
-  return res*j;
+
+  auto move_n_check=[&](int from,int to){
+    if(0>to||n<=to)return false;
+    vi b=a;
+    swap(b[from],b[to]);
+    vi used(n);
+    for(int i=0,j=0;i<n;i=j){
+      if(used(b[i]))return false;
+      while(j<n&&b[i]==b[j])j++;
+    }
+    return true;
+  };
+
+  int count=0;
+  for(auto &&arr:inters){
+    if(len(arr)<=1)continue;
+    if(len(arr)>3)return false;
+    count++;
+    if(count>2)return false;
+    if(len(arr)==2){
+      int i,l,r;
+      if(arr[0].second-arr[0].first==1){
+        i=arr[0].first;
+        tie(l,r)=arr[1];
+        if(move_n_check(i,l-1) || move_n_check(i,r))return true;
+      }else if(arr[1].second-arr[1].first==1){
+        i=arr[1].first;
+        tie(l,r)=arr[0];
+        if(move_n_check(i,l-1) || move_n_check(i,r))return true;
+      }
+      return false;
+    }else{
+      int i,to;
+      if(arr[0].second-arr[0].first==1){
+        i=arr[0].first;
+        to=arr[1].second;
+        if(move_n_check(i, to))return true;
+      }else if(arr[2].second-arr[2].first==1){
+        i=arr[2].first;
+        to=arr[0].second;
+        if(move_n_check(i, to))return true;
+      }
+      return false;
+    }
+    break;
+  }
+  return false;
 }
 
 int main() {
-  cin.tie(nullptr)->sync_with_stdio(0);
+	cin.tie(nullptr)->sync_with_stdio(0);
   int t;
   cin>>t;
-  while(t--)cout<<solve()<<"\n";
+  while(t--)cout<<(solve()?"yes":"no")<<"\n";
 }
