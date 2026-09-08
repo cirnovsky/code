@@ -1,38 +1,9 @@
-class Solution:
-    def maxTotalValue(self, value: list[int], decay: list[int], m: int) -> int:
-        MOD=10**9+7
-        n = len(value)
-        lo, hi = 0, max(value)
-        mn=0
-        def check(low):
-            total=0
-            for i in range(n):
-                if value[i]>=low:
-                    total+=(value[i]-low)//decay[i]+1
-            return total
-        while lo<=hi:
-            mid=(lo+hi)//2
-            if check(mid)>=m:
-                print(mid, check(mid))
-                mn=mid
-                lo=mid+1
-            else:
-                hi=mid-1
-        total=0
-        res=0
-        mn+=1
-        for i in range(n):
-            if value[i]>=mn:
-                c=(value[i]-mn)//decay[i]+1
-                if c+total<=m:
-                    total+=c
-                    # series
-                    first=value[i]
-                    last=value[i]-(c-1)*decay[i]
-                    res+=c*(first+last)//2
-                    res%=MOD
-        mn-=1
-        return (res+mn*(m-total))%MOD
+5, 6 (v):
+  1. C(47,3)/C(50,2), n=1, 0
+  2. C(3,1)*C(47,1)/C(50,2)/50, n=2, 2v
+  3, C(3,2)*(47,1)/C(50,2), n=3, 1500v
+  4. C(3,3)/C(50,2), n=4, 2000v
 
-sol=Solution
-print(sol.maxTotalValue(None,[9,10,7],[1,2,8],7))
+k:
+  0. C(46, 2)/C(50, 2), n=0, 0
+  1. C(
